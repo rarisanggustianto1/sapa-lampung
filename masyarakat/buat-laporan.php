@@ -1,12 +1,8 @@
 <?php
-session_start();
+session_start(); 
+include '../config/koneksi.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] != 'masyarakat') {
-    header("Location: ../login.php");
-    exit;
-}
-
-$nama = $_SESSION['nama'];
+$query_kat = mysqli_query($conn, "SELECT * FROM kategori");
 ?>
 
 <!DOCTYPE html>
@@ -17,137 +13,147 @@ $nama = $_SESSION['nama'];
     <title>Buat Laporan - SAPA Lampung</title>
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/masyarakat.css">
+    <style>
+        .text-danger { color: #dc2626; font-weight: bold; }
+        .file-input-hidden { display: none; }
+        
+        .sidebar-public {
+            background: linear-gradient(160deg, #c62828 0%, #7b0000 100%) !important;
+        }
+        .upload-box {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .upload-box:hover {
+            background-color: #f8fafc;
+            border-color: #c62828;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="dashboard-layout">
-
-    <aside class="sidebar">
-
-        <div class="sidebar-brand">
-            <div class="sidebar-logo">S</div>
-            <div>
-                <div class="sidebar-brand-name">SAPA</div>
-                <div class="sidebar-brand-sub">Portal Masyarakat</div>
+    
+    <aside class="sidebar sidebar-public">
+        <div>
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">S</div>
+                <div>
+                    <div class="sidebar-brand-name">SAPA</div>
+                    <div class="sidebar-brand-sub">Portal Masyarakat</div>
+                </div>
             </div>
+            
+            <nav class="sidebar-nav">
+                <a href="../login.php" class="sidebar-item">&ensp;Dashboard</a>
+                <a href="buat-laporan.php" class="sidebar-item active">&ensp;Buat Laporan</a>
+                <a href="riwayat.php" class="sidebar-item">&ensp;Riwayat Laporan</a>
+            </nav>
         </div>
-
-        <nav class="sidebar-nav">
-            <a href="dashboard.php" class="sidebar-item">Dashboard</a>
-            <a href="lapor.php" class="sidebar-item active">Buat Laporan</a>
-            <a href="tracking.php" class="sidebar-item">Tracking Laporan</a>
-            <a href="riwayat.php" class="sidebar-item">Riwayat Laporan</a>
-        </nav>
-
+        
         <div class="sidebar-footer">
             <div class="sidebar-user">
-                <div class="sidebar-avatar">
-                    <?= strtoupper(substr($nama,0,1)); ?>
-                </div>
+                <div class="sidebar-avatar">?</div>
                 <div>
-                    <div class="sidebar-user-name"><?= $nama; ?></div>
+                    <div class="sidebar-user-name">Tamu / Umum</div>
                     <div class="sidebar-user-role">Masyarakat</div>
                 </div>
             </div>
-            <a href="#" class="sidebar-logout" onclick="confirmLogout()">Keluar</a>
+            <a href="../index.php" class="sidebar-logout">Kembali ke Beranda</a>
         </div>
-
     </aside>
 
     <main class="main-content">
-
+        
         <div class="topbar">
             <div>
-                <h1 class="page-title">Buat Laporan</h1>
-                <p class="page-subtitle">Laporkan masalah masyarakat dengan lengkap</p>
+                <h1 class="page-title">Buat Laporan Publik</h1>
+                <p class="page-subtitle">Laporkan keluhan Anda secara langsung tanpa perlu masuk akun</p>
+            </div>
+            <div class="topbar-right">
+                <a href="../login.php" class="btn-primary" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">Masuk Sistem</a>
             </div>
         </div>
 
         <div class="content-body">
-
             <div class="form-card">
-
                 <div class="form-header">
-                    <h2>Form Laporan Masyarakat</h2>
-                    <p>Isi data laporan dengan benar agar mudah diproses petugas.</p>
+                    <h2>Form Laporan Pengaduan</h2>
+                    <p>Isi data laporan dengan benar agar mudah diverifikasi oleh Admin.</p>
+                    <div class="card-subtitle"><span class="text-danger">*</span> Keterangan: Kolom bertanda merah wajib diisi</div>
                 </div>
 
-                <form>
+                <form action="proses-lapor.php" method="POST" enctype="multipart/form-data">
 
                     <div class="form-group">
-                        <label>Judul Laporan</label>
-                        <input type="text" class="form-input" placeholder="Contoh: Jalan berlubang besar">
+                        <label>Judul Laporan <span class="text-danger">* (Wajib diisi)</span></label>
+                        <input type="text" name="judul_laporan" class="form-input" placeholder="Contoh: Jalan berlubang parah di daerah Sukarame" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Kategori Laporan</label>
-                        <select class="form-input">
-                            <option>Infrastruktur</option>
-                            <option>Kebersihan</option>
-                            <option>Fasilitas Umum</option>
-                            <option>Keamanan</option>
-                            <option>Darurat</option>
+                        <label>Kategori Laporan <span class="text-danger">* (Wajib diisi)</span></label>
+                        <select name="id_kategori" class="form-input" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            <?php while($kat = mysqli_fetch_assoc($query_kat)) : ?>
+                                <option value="<?= $kat['id_kategori']; ?>"><?= $kat['nama_kategori']; ?></option>
+                            <?php endwhile; ?>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Deskripsi Masalah</label>
-                        <textarea class="form-textarea" placeholder="Jelaskan detail masalah..."></textarea>
+                        <label>Deskripsi Masalah <span class="text-danger">* (Wajib diisi)</span></label>
+                        <textarea name="deskripsi" class="form-textarea" placeholder="Jelaskan kronologi atau detail masalah secara rinci..." required></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>Alamat Kejadian</label>
-                        <input type="text" class="form-input" placeholder="Masukkan alamat lengkap">
+                        <label>Alamat Kejadian <span class="text-danger">* (Wajib diisi)</span></label>
+                        <input type="text" name="alamat_kejadian" class="form-input" placeholder="Contoh: Jl. Ryacudu No. 12, Sukarame, Bandar Lampung" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Upload Foto</label>
-                        <div class="upload-box">
+                        <label>Upload Foto Bukti <span class="text-danger">* (Wajib diisi, Hanya Gambar)</span></label>
+                        <div class="upload-box" onclick="document.getElementById('foto_bukti').click();">
                             <div class="upload-icon">📷</div>
-                            <p>Klik untuk upload foto</p>
-                            <span>JPG / PNG maksimal 5MB</span>
+                            <p id="file-label">Klik untuk memilih foto dari perangkat</p>
+                            <span>Format: JPG / JPEG / PNG (Maksimal 5MB)</span>
                         </div>
+                        <input type="file" id="foto_bukti" name="foto_bukti" class="file-input-hidden" accept="image/*" required onchange="updateFileName(this)">
                     </div>
 
                     <div class="form-group">
-                        <label>Tingkat Urgensi</label>
+                        <label>Tingkat Urgensi <span class="text-danger">* (Wajib diisi)</span></label>
                         <div class="urgensi-group">
                             <label class="urgensi-item">
-                                <input type="radio" name="urgensi">
-                                Rendah
+                                <input type="radio" name="urgensi" value="Rendah" required> Rendah
                             </label>
                             <label class="urgensi-item">
-                                <input type="radio" name="urgensi" checked>
-                                Sedang
+                                <input type="radio" name="urgensi" value="Sedang" checked required> Sedang
                             </label>
                             <label class="urgensi-item">
-                                <input type="radio" name="urgensi">
-                                Tinggi
+                                <input type="radio" name="urgensi" value="Tinggi" required> Tinggi
                             </label>
                         </div>
                     </div>
 
                     <div class="form-action">
-                        <a href="dashboard.php" class="btn-secondary">Batal</a>
+                        <a href="../index.php" class="btn-secondary" style="text-decoration: none;">Batal</a>
                         <button type="submit" class="btn-primary">Kirim Laporan</button>
                     </div>
 
                 </form>
-
             </div>
-
         </div>
-
     </main>
-
 </div>
 
 <script>
-function confirmLogout() {
-    const yakin = confirm("Yakin mau keluar dari akun?");
-    if (yakin) {
-        window.location.href = "../logout.php";
+function updateFileName(input) {
+    const label = document.getElementById('file-label');
+    if (input.files && input.files[0]) {
+        label.innerText = "Gambar siap diupload: " + input.files[0].name;
+    } else {
+        label.innerText = "Klik untuk memilih foto dari perangkat";
     }
 }
 </script>

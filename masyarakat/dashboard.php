@@ -1,9 +1,7 @@
 <?php
 session_start();
-
-if (!isset($_SESSION['login'])) {
-    header("Location: ../../login.php");
-    exit;
+if(isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin','petugas'])){
+} else {
 }
 ?>
 
@@ -35,17 +33,14 @@ if (!isset($_SESSION['login'])) {
             <nav class="sidebar-nav">
                 <a href="dashboard.php" class="sidebar-item active">&ensp;Dashboard</a>
                 <a href="buat-laporan.php" class="sidebar-item">&ensp;Buat Laporan</a>
-                <a href="tracking.php" class="sidebar-item">&ensp;Tracking Laporan</a>
                 <a href="riwayat.php" class="sidebar-item">&ensp;Riwayat Laporan</a>
             </nav>
         </div>
         <div class="sidebar-footer">
             <div class="sidebar-user">
                 <div class="sidebar-avatar">
-                    <?php echo strtoupper(substr($_SESSION['nama'], 0, 1)); ?>
                 </div>
                 <div>
-                    <div class="sidebar-user-name"><?php echo htmlspecialchars($_SESSION['nama']); ?></div>
                     <div class="sidebar-user-role">Masyarakat</div>
                 </div>
             </div>
@@ -59,12 +54,11 @@ if (!isset($_SESSION['login'])) {
             <div>
                 <h2 class="page-title">Dashboard</h2>
                 <p class="page-subtitle">
-                    Selamat datang kembali, <strong><?php echo htmlspecialchars($_SESSION['nama']); ?></strong> 👋
+                    Selamat datang kembali, <strong></strong> 
                 </p>
             </div>
             <div class="topbar-user">
                 <div class="topbar-avatar">
-                    <?php echo strtoupper(substr($_SESSION['nama'], 0, 1)); ?>
                 </div>
             </div>
         </div>

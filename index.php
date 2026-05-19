@@ -90,7 +90,7 @@
                 Masuk
             </a>
 
-            <a href="login.php" class="btn btn-red">
+            <a href="masyarakat/buat-laporan.php" class="btn btn-red">
                 Buat Laporan
             </a>
 
@@ -133,7 +133,7 @@
             <div class="hero-actions">
 
                 <a
-                    href="login.php"
+                    href="masyarakat/buat-laporan.php"
                     class="btn btn-red btn-lg"
                 >
                     Buat Laporan
@@ -713,7 +713,7 @@
 
                     <h5>Layanan</h5>
 
-                    <a href="login.php">
+                    <a href="masyarakat/buat-laporan.php">
                         Buat Laporan
                     </a>
 

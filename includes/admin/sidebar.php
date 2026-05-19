@@ -50,6 +50,7 @@
         <a href="akun.php"
            class="sidebar-item <?= ($page == 'akun') ? 'active' : ''; ?>">
             Akun
+
         </a>
 
     </nav>
